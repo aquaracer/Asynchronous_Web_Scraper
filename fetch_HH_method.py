@@ -27,9 +27,9 @@ async def fetch_HH():
     #keyword = data['keyword']
     async with get_session(service, browser) as session:
         await session.get('https://ekaterinburg.hh.ru/search/vacancy?clusters=true&enable_snippets=true&only_with_salary=true&order_by=publication_time&text=Python&area=1&from=cluster_area&showClusters=true')
-        list_of_titles = await session.get_elements('a[data-qa=vacancy-serp__vacancy-title]') # 'a[class=job_icon]'
+        list_of_titles = await session.get_elements('a[data-qa=vacancy-serp__vacancy-title]') 
         list_of_compensations = await session.get_elements(
-            'div[data-qa=vacancy-serp__vacancy-compensation]')  # 'a[class=job_icon]'
+            'div[data-qa=vacancy-serp__vacancy-compensation]')  
         list_of_responsibilities = await session.get_elements(
             'div[data-qa=vacancy-serp__vacancy_snippet_responsibility]')
         list_of_requirements = await session.get_elements(
