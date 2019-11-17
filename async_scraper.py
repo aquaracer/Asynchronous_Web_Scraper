@@ -1,33 +1,200 @@
 import asyncio
 import sys
-
+from time import time
 from arsenic import get_session, keys, browsers, services
+import models
+from models import HeadHunter, MoiKrug, Session
+from contextlib import contextmanager
+
+
+@contextmanager
+def connect():
+    session = Session()
+    try:
+        yield session
+        session.commit()
+    except:
+        session.rollback()
+        raise
+    finally:
+        session.close()
+
+
+async def fetch_MK_links():
+    service = services.Geckodriver(binary=GECKODRIVER)
+    browser = browsers.Firefox()
+    async with get_session(service, browser) as session:
+        await session.get('https://moikrug.ru/vacancies?q=3d+s+max&sort=date&currency=rur&with_salary=1')
+        list_of_links = await session.get_elements('a[class=job_icon]') # получаем список линков
+
+        print('len(list_of_links)', len(list_of_links))
+        list_of_titles = await session.get_elements('div[class=title]')  # 'a[class=job_icon]'
+        filtred_list_of_titles = []
+        for item in list_of_titles:
+            title = await item.get_attribute('title')
+            if title != None:
+                filtred_list_of_titles.append(title)  # получаем отфильтрованный список названий вакансий
+
+        banner_vacancy = await session.get_element('div[class=vacancy_banner]') # проверяем есть ли рекламная вакансия в баннере
+                                                                                # если есть - из в итоговый список типов занятости заносим
+                                                                                # элемент, начиная с первого
+        banner_content = await banner_vacancy.get_text()
+        if banner_content == None:
+            summand = 0
+        else:
+            summand = 1
+
+        print('len(list_of_titles)', len(list_of_titles))
+        list_of_compensations = await session.get_elements('div[class=count')  # 'a[class=job_icon]'
+        print('len(list_of_compensations)', len(list_of_compensations))
+        list_of_skills = await session.get_elements('div[class=skills]')
+        print('len(list_of_skills)', len(list_of_skills))
+        list_of_companies = await session.get_elements('span[class=company_name]')
+        print('list_of_companies)', len(list_of_links))
+        # list_of_locations = await session.get_elements('span[class=location]')
+        list_of_occupations = await session.get_elements('span[class=occupation]')
+        print('len(list_of_occupations)', len(list_of_occupations))
+
+        new_list = []
+
+        for i in range(len(list_of_links)):
+            link = await list_of_links[i].get_attribute('href')  # получаем ссылку
+            link = 'https://moikrug.ru' + link
+            new_list.append([link])  # добавляем ссылку
+            new_list[i].append(sorted_list_of_titles[i])  # добавляем название вакансии
+            compensation = await list_of_compensations[i].get_text()  # получаем размер зарплаты
+            new_list[i].append(compensation)  # добавляем размер зарплаты
+            skills = await list_of_skills[i].get_text()  # получаем список навыков
+            new_list[i].append(skills)  # добавляем список навыков
+            company = await list_of_companies[i].get_text()  # получаем название компании
+            new_list[i].append(company)  # добавляем название компании
+            # location = await list_of_locations[i].get_text() # получаем расположение
+            # new_list[i].append(location) # добавляем расположение
+            occupation = await list_of_occupations[summand + 1].get_text()  # получаем тип занятости
+            new_list[i].append(occupation)  # добавляем тип занятости
+        pool['moi_krug_list'] = new_list
+
+
+async def fetch_MK_content():
+    service = services.Geckodriver(binary=GECKODRIVER)
+    browser = browsers.Firefox()
+    async with get_session(service, browser) as web_session:
+        for i in range(len(pool['moi_krug_list'])):
+            await web_session.get(pool['moi_krug_list'][i][0])
+            description_object = await web_session.get_element('div[class=vacancy_description]')
+            description = await description_object.get_text()
+            #pool['moi_krug_list'][i].append(description)
+            link = pool['headhunter_list'][i][0]
+            title = pool['headhunter_list'][i][1]
+            salary = pool['headhunter_list'][i][2]
+            skills = pool['headhunter_list'][i][3]
+            company = pool['headhunter_list'][i][4]
+            occupation = pool['headhunter_list'][i][5]
+            with connect() as session:
+                new_info = MoiKrug(link, title, salary, skills, company, occupation, description)
+                session.add(new_info)
+
+
+async def fetch_HH_links():
+    service = services.Geckodriver(binary=GECKODRIVER)
+    browser = browsers.Firefox()
+    async with get_session(service, browser) as session:
+        await session.get(
+            'https://ekaterinburg.hh.ru/search/vacancy?order_by=publication_time&clusters=true&area=1&text=java&enable_snippets=true&only_with_salary=true')
+        list_of_titles = await session.get_elements('a[data-qa=vacancy-serp__vacancy-title]')  # 'a[class=job_icon]'
+        list_of_compensations = await session.get_elements('div[data-qa=vacancy-serp__vacancy-compensation]')  # 'a[class=job_icon]'
+        list_of_responsibilities = await session.get_elements('div[data-qa=vacancy-serp__vacancy_snippet_responsibility]')
+        list_of_requirements = await session.get_elements('div[data-qa=vacancy-serp__vacancy_snippet_requirement]')
+
+        new_list = []
+        for i in range(len(list_of_titles)):
+            link = await list_of_titles[i].get_attribute('href')
+            new_list.append([link])
+            title = await list_of_titles[i].get_text()
+            new_list[i].append(title)
+            compensation = await list_of_compensations[i].get_text()
+            new_list[i].append(compensation)
+            responsibility = await list_of_responsibilities[i].get_text()
+            new_list[i].append(responsibility)
+            requirements = await list_of_requirements[i].get_text()
+            new_list[i].append(requirements)
+        pool['headhunter_list'] = new_list
+
+
+async def fetch_HH_content():
+    service = services.Geckodriver(binary=GECKODRIVER)
+    browser = browsers.Firefox()
+    async with get_session(service, browser) as web_session:
+        for i in range(len(pool['headhunter_list'])): # идем поэлементно по списку линков
+            await web_session.get(pool['headhunter_list'][i][0])  # загражаем линк из списка
+            company_object = await web_session.get_element('span[itemprop=name]')
+            company = await company_object.get_text()
+            # location_object = await session.get_element('span[itemprop=jobLocation]')
+            # location = await location_object.get_text()
+            experience_object = await web_session.get_element('span[data-qa=vacancy-experience]')
+            experience = await experience_object.get_text()
+            employment_mode_object = await web_session.get_element('p[data-qa=vacancy-view-employment-mode]')
+            employment_mode = await employment_mode_object.get_text()
+            description_object = await web_session.get_element('div[data-qa=vacancy-description')
+            description = await description_object.get_text()
+            link = pool['headhunter_list'][i][0]
+            title = pool['headhunter_list'][i][1]
+            salary = pool['headhunter_list'][i][2]
+            responsibilites_short = pool['headhunter_list'][i][3]
+            requirements_short = pool['headhunter_list'][i][4]
+
+            with connect() as session:
+                new_info = HeadHunter(link, title, salary, responsibilites_short,
+                                      requirements_short, company, experience,
+                                      employment_mode, description)
+                session.add(new_info)
+
+
+def start_method(method_1, method_2):
+
+    internal_loop = asyncio.get_event_loop()  # создаем событийный цикл
+    internal_loop.run_until_complete(method_1)  # проводим пока все таски не будут выполнены
+    internal_loop = asyncio.get_event_loop()  # создаем событийный цикл
+    internal_loop.run_until_complete(method_2)
+
+
+async def run(data_list):
+    service = services.Geckodriver(binary=GECKODRIVER)
+    browser = browsers.Firefox()
+    tasks = []
+    async with get_session(service, browser) as session:
+        for data in data_list:
+            task = asyncio.ensure_future(start_method(data[0],data[1]))  # назначаем таск в виде метода fetch
+            tasks.append(task) # добавляем таск в список назначенных тасков
+        responses = asyncio.gather(*tasks) # создаем список тасков для выполнения
+        await responses
+    return responses
+
+
 
 if sys.platform.startswith('win'):
     GECKODRIVER = './geckodriver.exe'
 else:
     GECKODRIVER = './geckodriver'
 
+pool = {}
 
-async def pars_url():
-    service = services.Geckodriver(binary=GECKODRIVER)
-    browser = browsers.Firefox()
+a = fetch_HH_links()
+b = fetch_HH_content()
+c = fetch_MK_links()
+d = fetch_MK_content()
 
-    async with get_session(service, browser) as session:
-        await session.get("https://moikrug.ru/vacancies?q=3d+s+max&sort=date&currency=rur&remote=1") # открыываем странице с запросом на вакансию
-        list_of_url = await session.get_elements('a[class=job_icon]')  # получаем массив элемнтов с именем класса 'job_icon'
-        final_list_of_urls = []
-        for item in list_of_url:
-            element_2 = item.get_text()
-            print('type item', type(item))  # type item <class 'arsenic.session.Element'>
-            print('element_2', element_2) #  element_2 <coroutine object Element.get_text at 0x10b473cc8>
-            print('type element_2', type(element_2)) # type element_2 <class 'coroutine'>
-            final_list_of_urls.append(element_2)
 
-def main():
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(pars_url())
+data_list=[[a,b],[c,d]]
 
 
 if __name__ == '__main__':
-    main()
+    t0 = time()
+    loop = asyncio.get_event_loop()  # создаем событийный цикл
+    asyncio.set_event_loop(loop)  # задаем событийный цикл
+    task = asyncio.ensure_future(run(data_list))  # назначаем таск в виде метода run()
+    loop.run_until_complete(task)
+    print("total pool:", pool)
+    print('total time SYNCH:', time() - t0)
+    
+
