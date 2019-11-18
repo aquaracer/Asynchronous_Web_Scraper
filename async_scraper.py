@@ -8,7 +8,7 @@ from contextlib import contextmanager, asynccontextmanager
 
 
 @contextmanager
-async def connect():
+def connect():
     session = Session()
     try:
         yield session
