@@ -83,7 +83,7 @@ async def fetch_MK_content():
             company = pool['moi_krug_list'][i][4]
             occupation = pool['moi_krug_list'][i][5]
             new_info = MoiKrug(link, title, salary, skills, company, occupation, description)
-            # await соединиться с базой
+            # session = Session() соединиться с базой
             with connect() as session:
                 session.add(new_info)
 
