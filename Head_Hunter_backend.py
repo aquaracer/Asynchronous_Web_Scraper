@@ -7,7 +7,7 @@ from sqlalchemy.schema import CreateTable
 class HeadHunter(base_jobsite):
 
     async def get_links(self):
-        async with get_session(base_jobsite.service, base_jobsite.browser) as session:
+        async with get_session(self.service, self.browser) as session:
             await session.get(
                 'https://ekaterinburg.hh.ru/search/vacancy?order_by=publication_time&clusters=true&area=1&text=java&enable_snippets=true&only_with_salary=true')
             list_of_titles = await session.get_elements('a[data-qa=vacancy-serp__vacancy-title]')  # 'a[class=job_icon]'
