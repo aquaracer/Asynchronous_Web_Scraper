@@ -1,17 +1,13 @@
 from Base_Jobsite import base_jobsite
-import asyncio
-import sys
-from arsenic import get_session, keys, browsers, services
-from models1 import HeadHunter_db, MoiKrug_db, engine
-from sqlalchemy.schema import CreateTable, DropTable
-from sqlalchemy_aio import ASYNCIO_STRATEGY
+from arsenic import get_session
+from models1 import MoiKrug_db, engine
+from sqlalchemy.schema import CreateTable
 
 
 class MyCircle(base_jobsite):
 
+
     async def get_links(self):
-        #base = base_jobsite()
-        #service, browser = base.setup_browser()
         async with get_session(base_jobsite.service, base_jobsite.browser) as session:
             await session.get('https://moikrug.ru/vacancies?q=3d+s+max&sort=date&currency=rur&with_salary=1')
             list_of_links = await session.get_elements('a[class=job_icon]')  # получаем список линков
@@ -48,9 +44,8 @@ class MyCircle(base_jobsite):
                 new_list[i].append(occupation)  # добавляем тип занятости
             base_jobsite.pool['moi_krug_list'] = new_list
 
+
     async def fetch_content(self):
-        #base = base_jobsite
-        #service, browser= setup_browser()
         await engine.execute(CreateTable(MoiKrug_db))
         async with get_session(base_jobsite.service, base_jobsite.browser) as web_session:
             for i in range(len(base_jobsite.pool['moi_krug_list'])):

@@ -1,9 +1,5 @@
-import asyncio
 import sys
-from time import time
-from arsenic import get_session, keys, browsers, services
-from sqlalchemy.schema import CreateTable, DropTable
-from sqlalchemy_aio import ASYNCIO_STRATEGY
+from arsenic import browsers, services
 
 
 class base_jobsite():
@@ -16,10 +12,11 @@ class base_jobsite():
     service = services.Geckodriver(binary=GECKODRIVER)
     browser = browsers.Firefox()
 
+    pool = {}
+
     async def get_links(self):
         pass
 
     async def get_content(self):
         pass
 
-    pool ={}

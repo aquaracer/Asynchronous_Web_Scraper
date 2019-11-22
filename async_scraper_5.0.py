@@ -1,10 +1,6 @@
 import asyncio
-import sys
 from time import time
 from arsenic import get_session, keys, browsers, services
-from models1 import HeadHunter_db, MoiKrug_db, engine
-from sqlalchemy.schema import CreateTable, DropTable
-from sqlalchemy_aio import ASYNCIO_STRATEGY
 from Head_Hunter_backend import HeadHunter
 from MyCircle_backend import MyCircle
 from Base_Jobsite import base_jobsite

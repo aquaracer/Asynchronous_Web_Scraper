@@ -1,17 +1,12 @@
 from Base_Jobsite import base_jobsite
-import asyncio
-import sys
-from arsenic import get_session, keys, browsers, services
-from models1 import HeadHunter_db, MoiKrug_db, engine
-from sqlalchemy.schema import CreateTable, DropTable
-from sqlalchemy_aio import ASYNCIO_STRATEGY
+from arsenic import get_session
+from models1 import HeadHunter_db, engine
+from sqlalchemy.schema import CreateTable
 
 
 class HeadHunter(base_jobsite):
 
     async def get_links(self):
-        #base = base_jobsite()
-        #service, browser= base.setup_browser()
         async with get_session(base_jobsite.service, base_jobsite.browser) as session:
             await session.get(
                 'https://ekaterinburg.hh.ru/search/vacancy?order_by=publication_time&clusters=true&area=1&text=java&enable_snippets=true&only_with_salary=true')
@@ -37,8 +32,6 @@ class HeadHunter(base_jobsite):
 
 
     async def fetch_content(self):
-        #base = base_jobsite()
-        #service, browser = base.setup_browser()
         await engine.execute(CreateTable(HeadHunter_db))
         async with get_session(base_jobsite.service, base_jobsite.browser) as web_session:
             for i in range(len(base_jobsite.pool['headhunter_list'])):  # идем поэлементно по списку линков
