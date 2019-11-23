@@ -1,3 +1,4 @@
+import os
 import asyncio
 
 from sqlalchemy_aio import ASYNCIO_STRATEGY
@@ -6,6 +7,9 @@ from sqlalchemy import (Column, Integer, MetaData, Table, Text, create_engine, s
 from sqlalchemy.schema import CreateTable, DropTable
 
 engine = create_engine('postgresql+psycopg2://user_5:555@localhost/base_scraper', strategy=ASYNCIO_STRATEGY)  # соединяемся с базой PostgresSQL
+
+// if os.environ.get("TEST"):
+//    engine = create_engine('postgresql+psycopg2://user_5:555@localhost/scraper_test', strategy=ASYNCIO_STRATEGY)
 
 metadata = MetaData()
 
