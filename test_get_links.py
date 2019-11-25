@@ -15,11 +15,7 @@ async def test_hh_links_negative(test_input,expected):
     test_method = HeadHunter(test_input)
     mytask_1 = asyncio.create_task(test_method.get_links())  # проводим пока все таски не будут выполнены
     await mytask_1
-    if len(test_method.hh_list) == 0:
-        answer = False
-    else:
-        answer = True
-    assert answer == expected
+    assert bool(len(test_method.hh_list)) is expected
 
 
 @pytest.mark.asyncio
@@ -34,10 +30,9 @@ async def test_fetch_content():
     list_from_base = []
     for i in range(20):
         async with engine.connect() as conn:
-            async with conn.begin() as trans:
-                res = await conn.execute(HeadHunter_db.select((HeadHunter_db.c.id == i + 1)))
-                ans = await res.fetchall()
-                print('ANS', ans)
+            res = await conn.execute(HeadHunter_db.select((HeadHunter_db.c.id == i + 1)))
+            ans = await res.fetchall()
+            print('ANS', ans)
         if len(ans) == 0:
             break
         arr = list(ans[0][1:6])  # получаем из базы элементы с первого по третий
