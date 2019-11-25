@@ -6,10 +6,12 @@ from sqlalchemy.schema import CreateTable
 
 class MyCircle(base_jobsite):
 
+    def __init__(self, START_URL):
+        self.START_URL = START_URL
 
     async def get_links(self):
-        async with get_session(base_jobsite.service, base_jobsite.browser) as session:
-            await session.get('https://moikrug.ru/vacancies?q=3d+s+max&sort=date&currency=rur&with_salary=1')
+        async with get_session(self.service, self.browser) as session:
+            await session.get(START_URL)
             list_of_links = await session.get_elements('a[class=job_icon]')  # получаем список линков
             list_of_titles = await session.get_elements('div[class=title]')  # 'a[class=job_icon]'
             filtred_list_of_titles = []
@@ -47,7 +49,7 @@ class MyCircle(base_jobsite):
 
     async def fetch_content(self):
         await engine.execute(CreateTable(MoiKrug_db))
-        async with get_session(base_jobsite.service, base_jobsite.browser) as web_session:
+        async with get_session(self.service, self.browser) as web_session:
             for i in range(len(base_jobsite.pool['moi_krug_list'])):
                 await web_session.get(base_jobsite.pool['moi_krug_list'][i][0])
                 description_object = await web_session.get_element('div[class=vacancy_description]')

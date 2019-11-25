@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 from sqlalchemy_aio import ASYNCIO_STRATEGY
 from datetime import time, date, datetime
@@ -7,10 +8,14 @@ from sqlalchemy.schema import CreateTable, DropTable
 
 engine = create_engine('postgresql+psycopg2://user_5:555@localhost/base_scraper', strategy=ASYNCIO_STRATEGY)  # соединяемся с базой PostgresSQL
 
+#if os.environ.get("TEST"):
+#    engine = create_engine('postgresql+psycopg2://user_5:555@localhost/test_base_scraper', strategy=ASYNCIO_STRATEGY)
+
 metadata = MetaData()
 
 HeadHunter_db = Table(
-        'HeadHunter' + str(date.today()), metadata,
+        'HeadHunter2019_11_25', #+ str(date.today()),,
+        metadata,
         Column('id', Integer, primary_key=True),
         Column('link', Text),
         Column('salary', Text),

@@ -4,13 +4,22 @@ from models1 import HeadHunter_db, engine
 from sqlalchemy.schema import CreateTable
 
 
+#START_URL = 'https://ekaterinburg.hh.ru/search/vacancy?order_by=publication_time&clusters=true&area=1&text=java&enable_snippets=true&only_with_salary=true'
+                #'https://ekaterinburg.hh.ru'
+
+
 class HeadHunter(base_jobsite):
+
+    hh_list =[]
+
+    def __init__(self, START_URL):
+        self.START_URL = START_URL
 
     async def get_links(self):
         async with get_session(self.service, self.browser) as session:
-            await session.get(
-                'https://ekaterinburg.hh.ru/search/vacancy?order_by=publication_time&clusters=true&area=1&text=java&enable_snippets=true&only_with_salary=true')
+            await session.get(self.START_URL)
             list_of_titles = await session.get_elements('a[data-qa=vacancy-serp__vacancy-title]')  # 'a[class=job_icon]'
+            print("LIST_OF_TITLES", list_of_titles)
             list_of_compensations = await session.get_elements(
                 'div[data-qa=vacancy-serp__vacancy-compensation]')  # 'a[class=job_icon]'
             list_of_responsibilities = await session.get_elements(
@@ -29,11 +38,11 @@ class HeadHunter(base_jobsite):
                 requirements = await list_of_requirements[i].get_text()
                 new_list[i].append(requirements)
             base_jobsite.pool['headhunter_list'] = new_list
-
+            self.hh_list = new_list
 
     async def fetch_content(self):
         await engine.execute(CreateTable(HeadHunter_db))
-        async with get_session(base_jobsite.service, base_jobsite.browser) as web_session:
+        async with get_session(self.service, self.browser) as web_session:
             for i in range(len(base_jobsite.pool['headhunter_list'])):  # идем поэлементно по списку линков
                 await web_session.get(base_jobsite.pool['headhunter_list'][i][0])  # загражаем линк из списка
                 company_object = await web_session.get_element('span[itemprop=name]')
