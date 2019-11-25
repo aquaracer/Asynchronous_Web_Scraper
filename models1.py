@@ -8,9 +8,6 @@ from sqlalchemy.schema import CreateTable, DropTable
 
 engine = create_engine('postgresql+psycopg2://user_5:555@localhost/base_scraper', strategy=ASYNCIO_STRATEGY)  # соединяемся с базой PostgresSQL
 
-#if os.environ.get("TEST"):
-#    engine = create_engine('postgresql+psycopg2://user_5:555@localhost/test_base_scraper', strategy=ASYNCIO_STRATEGY)
-
 metadata = MetaData()
 
 HeadHunter_db = Table(
