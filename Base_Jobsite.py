@@ -2,6 +2,7 @@ import sys
 from arsenic import browsers, services
 
 
+
 class base_jobsite():
 
     if sys.platform.startswith('win'):
