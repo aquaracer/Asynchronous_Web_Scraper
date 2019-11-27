@@ -8,10 +8,14 @@ import random
 
 class MyCircle(base_jobsite):
 
+    loop = asyncio.get_event_loop()
+    queue = asyncio.Queue(loop=loop)
+    MyCircle_list = None
+
     def __init__(self, START_URL):
         self.START_URL = START_URL
 
-    async def get_links(self, queue):
+    async def get_links(self):
         await engine.execute(CreateTable(MoiKrug_db))  # создаем таблицу
         async with get_session(self.service, self.browser) as session:
             await session.get(self.START_URL)
@@ -47,15 +51,14 @@ class MyCircle(base_jobsite):
                 new_list[i].append(company)  # добавляем название компании
                 occupation = await list_of_occupations[i].get_text()  # получаем тип занятости
                 new_list[i].append(occupation)  # добавляем тип занятости
-                await queue.put(new_list[i])
-            await queue.put(None)
+                await self.queue.put(new_list[i])
+            await self.queue.put(None)
 
 
-
-    async def fetch_content(self, queue):
+    async def fetch_content(self):
         while True:
             # wait for an item from the producer
-            item = await queue.get()
+            item = await self.queue.get()
             if item is None:
                 # the producer emits None to indicate that it is done
                 break

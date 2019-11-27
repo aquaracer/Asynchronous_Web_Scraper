@@ -1,6 +1,6 @@
 import sys
 from arsenic import browsers, services
-
+import asyncio
 
 
 class base_jobsite():
@@ -11,7 +11,7 @@ class base_jobsite():
         GECKODRIVER = './geckodriver'
 
     service = services.Geckodriver(binary=GECKODRIVER)
-    browser = browsers.Firefox()
+    browser = browsers.Firefox(firefoxOptions={'args': ['-headless']})
 
     pool = {}
 
