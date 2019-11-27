@@ -18,8 +18,12 @@ class HeadHunter(base_jobsite):
     def __init__(self, START_URL):
         self.START_URL = START_URL
 
+<<<<<<< HEAD
 
     async def get_links(self, queue=queue, limit = None):
+=======
+    async def get_links(self, queue):
+>>>>>>> 7d2de028f3039bda712b93b3f188f4ee59be9385
         await engine.execute(CreateTable(HeadHunter_db)) # создаем таблицу
         async with get_session(self.service, self.browser) as session:
             await session.get(self.START_URL)   # собираем 4 массива чтобы сделать 1 общий массив
@@ -47,16 +51,27 @@ class HeadHunter(base_jobsite):
                 new_list[i].append(requirements)
                 await queue.put(new_list[i])
             await queue.put(None)
+<<<<<<< HEAD
             self.HeadHunter_list = list_of_titles
 
 
     async def fetch_content(self, queue=queue):
+=======
+            #base_jobsite.pool['headhunter_list'] = new_list
+            #self.hh_list = new_list
+
+    async def fetch_content(self, queue):
+>>>>>>> 7d2de028f3039bda712b93b3f188f4ee59be9385
         while True:
             # wait for an item from the producer
             item = await queue.get()
             if item is None:
                 # the producer emits None to indicate that it is done
                 break
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7d2de028f3039bda712b93b3f188f4ee59be9385
             async with get_session(self.service, self.browser) as web_session:
                 await web_session.get(item[0])  # загражаем страницу по линку из списка и получаем объекты на странице
                 company_object = await web_session.get_element('span[itemprop=name]')
