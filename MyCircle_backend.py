@@ -15,11 +15,7 @@ class MyCircle(base_jobsite):
     def __init__(self, START_URL):
         self.START_URL = START_URL
 
-<<<<<<< HEAD
     async def get_links(self):
-=======
-    async def get_links(self, queue):
->>>>>>> 7d2de028f3039bda712b93b3f188f4ee59be9385
         await engine.execute(CreateTable(MoiKrug_db))  # создаем таблицу
         async with get_session(self.service, self.browser) as session:
             await session.get(self.START_URL)
@@ -55,7 +51,6 @@ class MyCircle(base_jobsite):
                 new_list[i].append(company)  # добавляем название компании
                 occupation = await list_of_occupations[i].get_text()  # получаем тип занятости
                 new_list[i].append(occupation)  # добавляем тип занятости
-<<<<<<< HEAD
                 await self.queue.put(new_list[i])
             await self.queue.put(None)
 
@@ -64,17 +59,6 @@ class MyCircle(base_jobsite):
         while True:
             # wait for an item from the producer
             item = await self.queue.get()
-=======
-                await queue.put(new_list[i])
-            await queue.put(None)
-
-
-
-    async def fetch_content(self, queue):
-        while True:
-            # wait for an item from the producer
-            item = await queue.get()
->>>>>>> 7d2de028f3039bda712b93b3f188f4ee59be9385
             if item is None:
                 # the producer emits None to indicate that it is done
                 break
