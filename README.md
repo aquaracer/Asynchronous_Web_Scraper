@@ -1,6 +1,6 @@
 Разработать парсер для сбора информации о вакансиях с сайтов по поиску работы.  
 
- 
+ ### Сбор данных
  Производится сбор следующих данных:
 - название вакансии
 - краткое описание вакансии
@@ -21,3 +21,21 @@
 
 ### Имплементация
 Для каждого сайта по поиску вакансий реализовать отдельный бэкенд, используя парадигмы ООП. 
+
+# Установка приложения 
+```bash
+git clone https://github.com/aquaracer/RESTful-API-User-Authentification-Flask-.git user_auth_app
+cd user_auth_app
+python3 -m venv env
+./env/bin/activate
+pip install -r requirements.txt
+```
+### Запуск сервиса
+```bash
+python3 main.py
+```
+### Запуск тестов
+```bash
+pytest test.py
+```
+
