@@ -24,18 +24,18 @@
 
 # Установка приложения 
 ```bash
-git clone https://github.com/aquaracer/RESTful-API-User-Authentification-Flask-.git user_auth_app
-cd user_auth_app
+git clone https://github.com/aquaracer/Asynchronous-Web-Scraper.git async_scraper_app
+cd async_scraper_app
 python3 -m venv env
 ./env/bin/activate
 pip install -r requirements.txt
 ```
 ### Запуск сервиса
 ```bash
-python3 main.py
+python3 async_scraper.py
 ```
 ### Запуск тестов
 ```bash
-pytest test.py
+pytest .
 ```
 
