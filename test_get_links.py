@@ -22,22 +22,22 @@ def queue_factory():
     return wrapper
 
 
-# @pytest.mark.asyncio
-# @pytest.mark.parametrize("test_input,expected_entries", [(LINK_1, 2), (LINK_2, 0)])
-# async def test_fetch_content(test_input, expected_entries, queue_factory, loop):
-#     queue = queue_factory(loop)
-#     limit = 2
-#     test_method = HeadHunter(test_input)
-#     mytask_1 = asyncio.create_task(test_method.get_links(queue, limit))  # проводим пока все таски не будут выполнены
-#     await mytask_1
-#     mytask_2 = asyncio.create_task(test_method.fetch_content(queue))  # проводим пока все таски не будут выполнены
-#     await mytask_2
-#     async with engine.connect() as conn:
-#         data_object = await conn.execute(HeadHunter_db.select())
-#         current_data = await data_object.fetchall()
-#     actual_entries = len(current_data)
-#     await engine.execute(DropTable(HeadHunter_db))
-#     assert expected_entries == actual_entries
+@pytest.mark.asyncio
+@pytest.mark.parametrize("test_input,expected_entries", [(LINK_1, 2), (LINK_2, 0)])
+async def test_fetch_content(test_input, expected_entries, queue_factory, loop):
+    queue = queue_factory(loop)
+    limit = 2
+    test_method = HeadHunter(test_input)
+    mytask_1 = asyncio.create_task(test_method.get_links(queue, limit))  # проводим пока все таски не будут выполнены
+    await mytask_1
+    mytask_2 = asyncio.create_task(test_method.fetch_content(queue))  # проводим пока все таски не будут выполнены
+    await mytask_2
+    async with engine.connect() as conn:
+        data_object = await conn.execute(HeadHunter_db.select())
+        current_data = await data_object.fetchall()
+    actual_entries = len(current_data)
+    await engine.execute(DropTable(HeadHunter_db))
+    assert expected_entries == actual_entries
 
 
 @pytest.mark.asyncio
@@ -50,27 +50,3 @@ async def test_hh_links(test_input, expected, queue_factory, loop):
       await mytask_1
       await engine.execute(DropTable(HeadHunter_db))
       assert bool(len(test_method.HeadHunter_list)) is expected
-
-
-
-#@pytest.mark.asyncio
-#@pytest.mark.parametrize("test_input,expected_entries", [(LINK_1, 20), (LINK_2, 0)])
-#async def test_fetch_content_positive(queue, loop):
-#
-
-# #    test_method = HeadHunter(LINK_1)
-#     mytask_1 = asyncio.create_task(test_method.get_links(queue))  # проводим пока все таски не будут выполнены
-#     await mytask_1
-#     expected_entries = len(test_method.hh_list)
-#     mytask_2 = asyncio.create_task(test_method.fetch_content(queue))  # проводим пока все таски не будут выполнены
-#     await mytask_2
-#     async with engine.connect() as conn:
-#         data_object = await conn.execute(HeadHunter_db.select())
-#         current_data = await data_object.fetchall()
-#     actual_entries = len(current_data)
-#     await engine.execute(DropTable(HeadHunter_db))
-#     assert expected_entries == actual_entries
-
-
-
-
