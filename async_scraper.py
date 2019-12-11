@@ -14,7 +14,6 @@ HHunter = HeadHunter(LINKS['HeadHunter'])
 MCircle = MyCircle(LINKS['MyCirle'])
 
 loop = asyncio.get_event_loop()
-#queue = asyncio.Queue(loop=loop)
 HHunter_get_links = HHunter.get_links()
 HHunter_fetch_content = HHunter.fetch_content()
 MCircle_get_links = MCircle.get_links()
