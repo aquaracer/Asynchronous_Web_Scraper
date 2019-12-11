@@ -2,7 +2,6 @@ import asyncio
 import pytest
 from models1 import HeadHunter_db, engine
 from Head_Hunter_backend import HeadHunter
-from Base_Jobsite import base_jobsite
 from sqlalchemy.sql import select
 from sqlalchemy.schema import DropTable
 
