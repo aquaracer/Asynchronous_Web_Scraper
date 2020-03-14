@@ -1,6 +1,5 @@
 import sys
 from arsenic import browsers, services
-import asyncio
 
 
 class base_jobsite():
