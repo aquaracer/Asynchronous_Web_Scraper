@@ -1,18 +1,14 @@
-import asyncio
-import os
-
 from sqlalchemy_aio import ASYNCIO_STRATEGY
-from datetime import time, date, datetime
-from sqlalchemy import (Column, Integer, MetaData, Table, Text, create_engine, select)
-from sqlalchemy.schema import CreateTable, DropTable
+from datetime import date
+from sqlalchemy import (Column, Integer, MetaData, Table, Text, create_engine)
+
 
 engine = create_engine('postgresql+psycopg2://user_5:555@localhost/base_scraper', strategy=ASYNCIO_STRATEGY)  # соединяемся с базой PostgresSQL
 
 metadata = MetaData()
 
 HeadHunter_db = Table(
-        'HeadHunter2019_11_25', #+ str(date.today()),,
-        metadata,
+        f'HeadHunter_{str(date.today())}', metadata,
         Column('id', Integer, primary_key=True),
         Column('link', Text),
         Column('salary', Text),
@@ -26,7 +22,7 @@ HeadHunter_db = Table(
 
 
 MoiKrug_db = Table(
-        'MoiKrug' + str(date.today()), metadata,
+        f'HeadHunter_{str(date.today())}', metadata,
         Column('id', Integer, primary_key=True),
         Column('link', Text),
         Column('title', Text),
